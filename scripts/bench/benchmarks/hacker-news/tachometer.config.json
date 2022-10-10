@@ -1,0 +1,40 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Polymer/tachometer/master/config.schema.json",
+  "benchmarks": [
+    {
+      "url": "index.html",
+      "measurement": [
+        {
+          "name": "Load React",
+          "mode": "performance",
+          "entryName": "Load React"
+        },
+        {
+          "name": "Load ReactDOM",
+          "mode": "performance",
+          "entryName": "Load ReactDOM"
+        },
+        {
+          "name": "Load React+ReactDOM",
+          "mode": "performance",
+          "entryName": "Load React+ReactDOM"
+        },
+        {
+          "name": "Initial Render",
+          "mode": "performance",
+          "entryName": "Initial Render"
+        },
+        {
+          "name": "Update Render",
+          "mode": "performance",
+          "entryName": "Update Render"
+        }
+      ],
+      "expand": [
+        {
+          "name": "this-change"
+        }
+      ]
+    }
+  ]
+}

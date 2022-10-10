@@ -6,31 +6,31 @@
   <body>
     <div id="app"></div>
     <script>
-      performance.mark('Load React');
-      performance.mark('Load React+ReactDOM');
+      performance.mark('Load React-start');
+      performance.mark('Load React+ReactDOM-start');
     </script>
     <script src="react.production.min.js"></script>
     <script>
-      performance.measure('Load React', 'Load React');
+      performance.measure('Load React', 'Load React-start');
     </script>
     <script>
-      performance.mark('Load ReactDOM');
+      performance.mark('Load ReactDOM-start');
     </script>
     <script src="react-dom.production.min.js"></script>
     <script>
-      performance.measure('Load ReactDOM', 'Load ReactDOM');
-      performance.measure('Load React+ReactDOM', 'Load React+ReactDOM');
+      performance.measure('Load ReactDOM', 'Load ReactDOM-start');
+      performance.measure('Load React+ReactDOM', 'Load React+ReactDOM-start');
     </script>
     <script src="top-stories.js"></script>
     <script src="benchmark.js"></script>
     <script>
-      performance.mark('Initial Render');
+      performance.mark('Initial Render-start');
       render();
-      performance.measure('Initial Render', 'Initial Render');
+      performance.measure('Initial Render', 'Initial Render-start');
       requestAnimationFrame(() => {
-        performance.mark('Update Render');
+        performance.mark('Update Render-start');
         render();
-        performance.measure('Update Render', 'Update Render');
+        performance.measure('Update Render', 'Update Render-start');
       });
     </script>
   </body>

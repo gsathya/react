@@ -987,6 +987,7 @@ export type InstructionValue =
   | LoadGlobal
   | StoreGlobal
   | FunctionExpression
+  | OutlinedFunctionExpression
   | {
       kind: "TaggedTemplateExpression";
       tag: Place;
@@ -1082,6 +1083,17 @@ export type FunctionExpression = {
     | t.FunctionDeclaration;
   loc: SourceLocation;
 };
+
+export type OutlinedFunctionExpression = {
+  kind: "OutlinedFunctionExpression";
+  name: string | null;
+  loweredFunc: LoweredFunction;
+  expr:
+    | t.ArrowFunctionExpression
+    | t.FunctionExpression
+    | t.FunctionDeclaration;
+  loc: SourceLocation;
+}
 
 export type Destructure = {
   kind: "Destructure";
@@ -1593,6 +1605,10 @@ export function isUseOperator(id: Identifier): boolean {
   return (
     id.type.kind === "Function" && id.type.shapeId === "BuiltInUseOperator"
   );
+}
+
+export function isJSXType(id: Identifier): boolean {
+  return (id.type.kind === "Object" && id.type.shapeId === "BuiltinJsx")
 }
 
 export function getHookKindForType(

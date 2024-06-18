@@ -35,7 +35,7 @@ import { c as _c } from "react/compiler-runtime";
 import fbt from "fbt";
 import { Stringify } from "shared-runtime";
 
-export function Component(props) {
+function Component(props) {
   const $ = _c(4);
   let count = 0;
   if (props.items) {

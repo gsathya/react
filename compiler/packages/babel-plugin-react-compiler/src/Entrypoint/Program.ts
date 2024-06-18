@@ -445,7 +445,10 @@ export function compileProgram(
     if (gating != null) {
       insertGatedFunctionDeclaration(originalFn, transformedFn, gating);
     } else {
-      originalFn.replaceWith(transformedFn);
+      originalFn.replaceWithMultiple([
+        transformedFn,
+        ...compiledFn.outlinedFunctions,
+      ]);
     }
   }
 

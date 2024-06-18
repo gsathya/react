@@ -239,6 +239,7 @@ export function mayAllocate(
     case "ObjectExpression":
     case "UnsupportedNode":
     case "ObjectMethod":
+    case "OutlinedFunctionExpression":
     case "FunctionExpression":
     case "TaggedTemplateExpression": {
       return true;

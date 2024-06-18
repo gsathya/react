@@ -95,6 +95,7 @@ import {
   validatePreservedManualMemoization,
   validateUseMemo,
 } from "../Validation";
+import { outlineJSX } from "../Optimization/OutlineJSX";
 
 export type CompilerPipelineValue =
   | { kind: "ast"; name: string; value: CodegenFunction }
@@ -200,6 +201,11 @@ function* runWithEnvironment(
 
   inferReferenceEffects(hir);
   yield log({ kind: "hir", name: "InferReferenceEffects", value: hir });
+
+  if (env.config.enableOutlineJsx) {
+    outlineJSX(hir);
+    yield log({ kind: "hir", name: "OutlineJsx", value: hir });
+  }
 
   // Note: Has to come after infer reference effects because "dead" code may still affect inference
   deadCodeElimination(hir);

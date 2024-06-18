@@ -22,7 +22,7 @@ export const FIXTURE_ENTRYPOINT = {
 
 ```javascript
 import { c as _c } from "react/compiler-runtime";
-export function Component(props) {
+function Component(props) {
   const $ = _c(2);
   let t0;
   if ($[0] !== props.a) {

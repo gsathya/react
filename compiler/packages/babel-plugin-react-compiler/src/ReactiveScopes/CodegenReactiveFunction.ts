@@ -14,6 +14,7 @@ import {
   ArrayPattern,
   BlockId,
   GeneratedSource,
+  HIRFunction,
   Identifier,
   IdentifierId,
   InstructionKind,
@@ -85,6 +86,8 @@ export type CodegenFunction = {
    * because they were part of a pruned memo block.
    */
   prunedMemoValues: number;
+
+  outlinedFunctions: Array<t.Expression>;
 };
 
 export function codegenFunction(
@@ -306,6 +309,7 @@ function codegenReactiveFunction(
     memoValues: countMemoBlockVisitor.memoValues,
     prunedMemoBlocks: countMemoBlockVisitor.prunedMemoBlocks,
     prunedMemoValues: countMemoBlockVisitor.prunedMemoValues,
+    outlinedFunctions: cx.outlinedFunctions,
   });
 }
 
@@ -355,6 +359,7 @@ class Context {
   temp: Temporaries;
   errors: CompilerError = new CompilerError();
   objectMethods: Map<IdentifierId, ObjectMethod> = new Map();
+  outlinedFunctions: Array<t.Expression> = [];
   uniqueIdentifiers: Set<string>;
   synthesizedNames: Map<string, ValidIdentifierName> = new Map();
 
@@ -1930,40 +1935,29 @@ function codegenInstructionValue(
       value = codegenPlaceToExpression(cx, instrValue.place);
       break;
     }
+    case "OutlinedFunctionExpression": {
+      value = codegenloweredFunc(
+        cx,
+        instrValue.loweredFunc.func,
+        instrValue.expr.type,
+        instrValue.name
+      );
+      const outlinedFunc = codegenloweredFunc(
+        cx,
+        instrValue.outlinedFunc,
+        "FunctionDeclaration",
+        null
+      );
+      cx.outlinedFunctions.push(outlinedFunc);
+      break;
+    }
     case "FunctionExpression": {
-      const loweredFunc = instrValue.loweredFunc.func;
-      const reactiveFunction = buildReactiveFunction(loweredFunc);
-      pruneUnusedLabels(reactiveFunction);
-      pruneUnusedLValues(reactiveFunction);
-      pruneHoistedContexts(reactiveFunction);
-      const fn = codegenReactiveFunction(
-        new Context(
-          cx.env,
-          reactiveFunction.id ?? "[[ anonymous ]]",
-          cx.uniqueIdentifiers,
-          cx.temp
-        ),
-        reactiveFunction
-      ).unwrap();
-      if (instrValue.expr.type === "ArrowFunctionExpression") {
-        let body: t.BlockStatement | t.Expression = fn.body;
-        if (body.body.length === 1 && loweredFunc.directives.length == 0) {
-          const stmt = body.body[0]!;
-          if (stmt.type === "ReturnStatement" && stmt.argument != null) {
-            body = stmt.argument;
-          }
-        }
-        value = t.arrowFunctionExpression(fn.params, body, fn.async);
-      } else {
-        value = t.functionExpression(
-          fn.id ??
-            (instrValue.name != null ? t.identifier(instrValue.name) : null),
-          fn.params,
-          fn.body,
-          fn.generator,
-          fn.async
-        );
-      }
+      value = codegenloweredFunc(
+        cx,
+        instrValue.loweredFunc.func,
+        instrValue.expr.type,
+        instrValue.name
+      );
       break;
     }
     case "TaggedTemplateExpression": {
@@ -2161,6 +2155,45 @@ function codegenInstructionValue(
  * may be escaped unnecessarily. To avoid trigger this Babel bug, we use a JsxExpressionContainer for such strings.
  */
 const STRING_REQUIRES_EXPR_CONTAINER_PATTERN = /[\u{0080}-\u{FFFF}]|"/u;
+
+function codegenloweredFunc(
+  cx: Context,
+  loweredFunc: HIRFunction,
+  fnType: string,
+  name: string | null
+): t.Expression {
+  const reactiveFunction = buildReactiveFunction(loweredFunc);
+  pruneUnusedLabels(reactiveFunction);
+  pruneUnusedLValues(reactiveFunction);
+  pruneHoistedContexts(reactiveFunction);
+  const fn = codegenReactiveFunction(
+    new Context(
+      cx.env,
+      reactiveFunction.id ?? "[[ anonymous ]]",
+      cx.uniqueIdentifiers,
+      cx.temp
+    ),
+    reactiveFunction
+  ).unwrap();
+  if (fnType === "ArrowFunctionExpression") {
+    let body: t.BlockStatement | t.Expression = fn.body;
+    if (body.body.length === 1 && loweredFunc.directives.length == 0) {
+      const stmt = body.body[0]!;
+      if (stmt.type === "ReturnStatement" && stmt.argument != null) {
+        body = stmt.argument;
+      }
+    }
+    return t.arrowFunctionExpression(fn.params, body, fn.async);
+  }
+  return t.functionExpression(
+    fn.id ?? (name != null ? t.identifier(name) : null),
+    fn.params,
+    fn.body,
+    fn.generator,
+    fn.async
+  );
+}
+
 function codegenJsxAttribute(
   cx: Context,
   attribute: JsxAttribute

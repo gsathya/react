@@ -407,6 +407,9 @@ const EnvironmentConfigSchema = z.object({
    * and identifiers have been changed.
    */
   hookPattern: z.string().nullable().default(null),
+
+  // TODO(gsn): Write docblock
+  enableOutlineJsx: z.boolean().nullable().default(false),
 });
 
 export type EnvironmentConfig = z.infer<typeof EnvironmentConfigSchema>;

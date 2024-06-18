@@ -833,6 +833,16 @@ export type LoadLocal = {
   loc: SourceLocation;
 };
 
+export type JsxExpression = {
+  kind: "JsxExpression";
+  tag: Place | BuiltinTag;
+  props: Array<JsxAttribute>;
+  children: Array<Place> | null; // null === no children
+  loc: SourceLocation;
+  openingLoc: SourceLocation;
+  closingLoc: SourceLocation;
+};
+
 /*
  * The value of a given instruction. Note that values are not recursive: complex
  * values such as objects or arrays are always defined by instructions to define
@@ -914,15 +924,7 @@ export type InstructionValue =
       type: Type;
       loc: SourceLocation;
     }
-  | {
-      kind: "JsxExpression";
-      tag: Place | BuiltinTag;
-      props: Array<JsxAttribute>;
-      children: Array<Place> | null; // null === no children
-      loc: SourceLocation;
-      openingLoc: SourceLocation;
-      closingLoc: SourceLocation;
-    }
+  | JsxExpression
   | {
       kind: "ObjectExpression";
       properties: Array<ObjectProperty | SpreadPattern>;
@@ -1088,12 +1090,13 @@ export type OutlinedFunctionExpression = {
   kind: "OutlinedFunctionExpression";
   name: string | null;
   loweredFunc: LoweredFunction;
+  outlinedFunc: HIRFunction;
   expr:
     | t.ArrowFunctionExpression
     | t.FunctionExpression
     | t.FunctionDeclaration;
   loc: SourceLocation;
-}
+};
 
 export type Destructure = {
   kind: "Destructure";
@@ -1608,7 +1611,7 @@ export function isUseOperator(id: Identifier): boolean {
 }
 
 export function isJSXType(id: Identifier): boolean {
-  return (id.type.kind === "Object" && id.type.shapeId === "BuiltinJsx")
+  return id.type.kind === "Object" && id.type.shapeId === "BuiltInJsx";
 }
 
 export function getHookKindForType(

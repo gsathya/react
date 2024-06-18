@@ -500,6 +500,8 @@ const skipFilter = new Set([
 
   // needs to be executed as a module
   "meta-property",
+
+  "outline-jsx",
 ]);
 
 export default skipFilter;

@@ -338,6 +338,11 @@ const EnvironmentConfigSchema = z.object({
    */
   enableFunctionOutlining: z.boolean().default(true),
 
+  /**
+   * TODO(gsn): Fill this out
+   */
+  enableJsxOutlining: z.boolean().default(false),
+
   /*
    * Enables instrumentation codegen. This emits a dev-mode only call to an
    * instrumentation function, for components and hooks that Forget compiles.

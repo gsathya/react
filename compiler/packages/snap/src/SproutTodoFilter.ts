@@ -504,6 +504,9 @@ const skipFilter = new Set([
   'todo.lower-context-access-array-destructuring',
   'lower-context-selector-simple',
   'lower-context-acess-multiple',
+
+  // TODO
+  'jsx-outlining-simple',
 ]);
 
 export default skipFilter;

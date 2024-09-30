@@ -507,6 +507,7 @@ const skipFilter = new Set([
 
   // TODO
   'jsx-outlining-simple',
+  'jsx-outlining-jsx-stored-in-var',
 ]);
 
 export default skipFilter;

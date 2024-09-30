@@ -68,6 +68,7 @@ function outlineJsxImpl(
       }
 
       if (jsx.length !== 0) {
+        debugger;
         const result = process(fn, jsx, globals);
         if (result) {
           outlinedFns.push(result.fn);
@@ -100,10 +101,10 @@ function outlineJsxImpl(
       shouldRunDeadCodeElimination = true;
       const newInstr = [];
       for (let i = 0; i < block.instructions.length; i++) {
-        if (newInstrs.has(i)) {
-          const {end, instrs} = newInstrs.get(i);
+        if (newInstrs.has(i + 1)) {
+          const {end, instrs} = newInstrs.get(i + 1);
           newInstr.push(...instrs);
-          i = end - 1;
+          i = end - 2;
         } else {
           newInstr.push(block.instructions[i]);
         }
